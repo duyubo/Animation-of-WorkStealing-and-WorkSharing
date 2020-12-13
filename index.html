@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://unpkg.com/sanitize.css" rel="stylesheet" />
+    <title>Document</title>
+    <link href="src/style.css" rel="stylesheet" />
+</head>
+<body>
+    <section class="header">Work Stealing and Work Sharing animation</section>
+    
+    <form>
+        Number of tasks: <input type="text" name="MaxTasks" id='MT' placeholder = 10>
+        Critical path length: <input type="text" name="MaxSpan" id= 'MS' placeholder = 5><br>
+        Number of task sets: <input type="text" name="MaxTaskSets" id='MTS' placeholder = 4>
+        Number of processors: <input type="text" name="NP" id='NP' placeholder = 2>     
+    </form>
+
+    <input type="submit" value="Submit" onclick="" id = 'submitB'>
+    <select id="alg_select" style="margin-left:50px">
+        <option value="1">Simple Example</option>
+        <option value="2">Work Stealing</option>
+        <option value="3">Work Sharing</option>
+    </select>
+    <input type="submit" value="go" onclick="" id = 'go' style="margin-left:50px">
+
+    <script src="src/animation.js"></script>
+</body>
+<script src="src/animation.js"></script>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link href="https://unpkg.com/sanitize.css" rel="stylesheet" />
+        <title>Document</title>
+        <link href="src/style.css" rel="stylesheet" />
+    </head>
+<body style="text-align:center;">
+    <canvas id="myCanvas" width="1200" height="10000"></canvas>
+    <section class="data-container"></section>
+    <script src="src/animation.js"></script>
+    
+</body>
+
+</html>
