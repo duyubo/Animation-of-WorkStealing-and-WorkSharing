@@ -21,11 +21,11 @@ Each task node can only spawn one child task set and the probability of the spaw
 
 ## How to use it
 
-Fill in the areas mention above. Press the 'submit' button, the program will draw some task sets. Choose 'Work Stealing' or 'Work Sharing' then press the 'go' button, the animation will begin.
+Fill in the areas mentioned above. Press the 'submit' button, the program will draw some task sets. Choose 'Work Stealing' or 'Work Sharing' then press the 'go' button, the animation will begin.
 
 Each processor is represented by a unique color. The color on the task nodes means which processor is executing the task node. Double ended deques for different processors are also represented by different colors. 
 
-And there will be a notation 'pX tY', where X means which processer and Y means finished at which time step. Once the node is finished, it will become black.
+And there will also be a notation 'pX tY' near each node, where X means which processer and Y means finished at which time step. Once the node is finished, it will become black.
 
 ## Examples
 
