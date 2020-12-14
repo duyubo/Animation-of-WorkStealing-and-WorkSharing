@@ -15,6 +15,10 @@ We call each connected graph as one task set. To make the animation more clear, 
 
 Each task node can only spawn one child task set and the probability of the spawn depends on the longest length of itself. While, each task node can have many parent nodes and different children task sets of the same paren task set can return back to the same task node. 
 
+
+![Example.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkSharing.gif "Work Sharing")
+
+
 ## How to use it
 
 Fill in the areas mention above. Press the 'submit' button, the program will draw some task sets. Choose 'Work Stealing' or 'Work Sharing' then press the 'go' button, the animation will begin.
@@ -33,4 +37,6 @@ And there will be a notation 'pX tY', where X means which processer and Y means 
 
 ![Work Stealing.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkStealing.gif "Work Stealing")
 
+### To do
 
+comment the code to make it more readable
