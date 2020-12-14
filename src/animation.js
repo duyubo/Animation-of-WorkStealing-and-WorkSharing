@@ -1,6 +1,8 @@
 "use strict";
 const container = document.querySelector(".data-container");
 
+// Draw the arrow between the trees given start point (fromx, fromy)
+//, end point (tox, toy) and length of the arrow (r) 
 function draw_arrow(context, fromx, fromy, tox, toy, r){
     var x_center = fromx;
     var y_center = fromy;
@@ -42,51 +44,40 @@ function draw_arrow(context, fromx, fromy, tox, toy, r){
     context.stroke();
 }
 
+// Draw the circle given center point (startX, startY), radius(size) and color (color)
 function draw_circle(context, startX, startY, size,color = '#B8D9FE') {
     context.beginPath();
     context.fillStyle = color;
     context.arc(startX, startY, size, 0, 2 * Math.PI);
     context.strokeStyle = color;
     context.fill();
-    context.closePath();
-    
+    context.closePath(); 
     context.stroke();
-    
 }
 
-function draw_text (context, startX, startY,num){
-
-    //context.fillStyle = '#B8D9FE';
-    context.fill();
-    context.strokeStyle = '#ffffff';
-    context.font = 'bold 10pt Calibri';
-    context.textAlign = 'center';
-    context.fillStyle = 'white';
-
-    // Defining the `textBaseline`… 
-    context.textBaseline = "middle";
-
-    context.fillText(num, startX, startY);
-}
-
+//Draw test given center location (startX, startY), text content (t) and text color (textColor)
 function draw_text1 (context, startX, startY,t,textColor){
 
-    //context.fillStyle = '#B8D9FE';
     context.beginPath();
     context.fill();
     context.strokeStyle = '#ffffff';
     context.font = 'bold 10pt Calibri';
     context.textAlign = 'center';
     context.fillStyle = textColor;
-
-    // Defining the `textBaseline`… 
     context.textBaseline = "middle";
-
     context.fillText(t, startX, startY);
     context.closePath();
 }
 
-  function draw_node(context, fromx, fromy, tox, toy, r,num,flag = 1,color = '#B8D9FE'){
+//Draw the number for each node
+function draw_text (context, startX, startY,num){
+    draw_text1 (context, startX, startY,num,'white');
+}
+
+//Draw the node given the current center (fromx, fromy), next node center location (tox, toy),
+//radius (r), number index of the node (num), a flag represents if it has a next node (flag), node color (color)
+//Each node consits of a circle with a node number in the center and ad arrow pointed to the netx node if it has
+function draw_node(context, fromx, fromy, tox, toy, r,num,flag = 1,color = '#B8D9FE'){
     draw_circle(context, fromx, fromy, r/2,color = color);
     draw_text (context, fromx, fromy,num)
     if (flag==1){
@@ -94,25 +85,43 @@ function draw_text1 (context, startX, startY,t,textColor){
     }
 }
 
-
-function generateBlocks(num = 3,context) {
-  if (num && typeof num !== "number") {
-    alert("First argument must be a typeof Number");
-    return;
-  }
-  for (let i = 0; i < num; i += 1) {
-        const value = Math.floor(Math.random() * 100)+200;
-        //var canvas = document.getElementById("myCanvas");
-        //var context = canvas.getContext("2d");
-        draw_node(context, value, value, 40);
-  }
-}
-
-
+//Set the probability of 'spawn/forking' of each node, given the lengh of this task set
 function probaFork(x) {
     return (1-(1/x));
 }
 
+//Class node, represents the information of the nodes:
+/*
+index: index of the node
+next: next node
+prev: ancestor node but not the paret node
+child: child node
+parent: parent node
+parentSet: all the parents and ancestors of the node
+color: the color label of the node
+x: x location of the node center
+y: y location of the node center
+!!!!!!!!
+
+o1
+|
+o2
+| \
+o3  o6
+|    \
+o4    o7
+|    /
+|   /
+o5
+next is different from the child:
+o3 is the next of o2;
+o6 is teh child of o2;
+prev is different from the parent:
+o4 is the prev of o5;
+o2 is parent of o6;
+o7 is parent of o5;
+!!!!!!!!
+*/
 class Node{
     index;
     next = null;
@@ -159,6 +168,7 @@ class Node{
 
 }
 
+// The whole tree sets
 class treeInf{
     tree;
     treeSet
@@ -169,6 +179,7 @@ class treeInf{
 
 }
 
+// The information of each single tree
 class singleTreeInf{
     tree;
     length;
@@ -181,6 +192,8 @@ class singleTreeInf{
     }
 }
 
+//Draw the tree given the critical path length (maxDepth), number of nodes
+// (maxNode) and nnumber of task sets (taskSetNum) 
 function generateTree(maxNode = 30,maxDepth = 10, taskSetNum = 3){
     var i = 0;
     var treeInfSet = [];
