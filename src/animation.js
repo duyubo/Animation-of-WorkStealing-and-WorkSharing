@@ -85,6 +85,21 @@ function draw_node(context, fromx, fromy, tox, toy, r,num,flag = 1,color = '#B8D
     }
 }
 
+// draw the double ended queue
+function draw_deque(context,color,upx,upy,w,h,num){
+
+    context.beginPath();
+    context.fillStyle = color;
+    context.rect(upx,upy,w,h);
+    context.strokeStyle = color;
+    context.fill();
+    context.stroke();
+    draw_text (context, upx+w/2, upy+h/2,num);
+    context.closePath();
+    
+    
+}
+
 //Set the probability of 'spawn/forking' of each node, given the lengh of this task set
 function probaFork(x) {
     return (1-(1/x));
@@ -197,107 +212,89 @@ class singleTreeInf{
 function generateTree(maxNode = 30,maxDepth = 10, taskSetNum = 3){
     var i = 0;
     var treeInfSet = [];
+
+    // For each task set
     for (var count = 0; count < taskSetNum; count++){
-    var treeSet = new Array();
-    var tree = new Array();
-    var root = new Node(0);
-    tree[0] = root;
-    var n_pre = root;
-    var n_next;
-    var setNum = 1;
-    var creatchildIndex; 
-    for(i = 1;i<maxDepth;i++){
-        n_next = new Node(i);
-        tree[i] = n_next;
-        n_pre.set_next(n_next);
-        n_next.set_prev(n_pre);
-        n_pre = n_next;
+        var treeSet = new Array();
+        var tree = new Array(); // save the root node of each tree set
+        var root = new Node(0);
+        tree[0] = root;
+        var n_pre = root;
+        var n_next;
+        // draw the critical path 
+        for(i = 1;i<maxDepth;i++){
+            n_next = new Node(i);
+            tree[i] = n_next;
+            n_pre.set_next(n_next);
+            n_next.set_prev(n_pre);
+            n_pre = n_next;
         
-    }
-    console.log(root);
-
-    treeSet[0] = new singleTreeInf(root,maxDepth);
-    var lastTree = 0;
-    var nextCount = 1;
-    while (i < maxNode){
-        
-        var l = 0;
-        if (lastTree >= treeSet.length){
-            break;
         }
+        console.log(root);
 
-        console.log(treeSet[lastTree]);
-        console.log(tree);
-
-        var n = treeSet[lastTree].tree;
+        treeSet[0] = new singleTreeInf(root,maxDepth);
+        var lastTree = 0;
+        var nextCount = 1;
+        while (i < maxNode){
         
-        // the last and the second last node can no have children
-        while (i < maxNode && l < treeSet[lastTree].length - 2){
-            
-           if (Math.random() < probaFork(treeSet[lastTree].length)){
-                var newChild = new Node(i);
-                tree[i] = newChild;
-                var newLength = Math.round(Math.random()*( treeSet[lastTree].length - 3 - l) + 1);
-                n.set_child(newChild);
-                treeSet[nextCount] = new singleTreeInf(newChild,newLength,lastTree);
-                nextCount = nextCount + 1;
-                newChild.set_parent(n);
-                console.log('the first node in the child',newChild);
+            var l = 0;
+            if (lastTree >= treeSet.length){
+                break;
+            }
+
+            console.log(treeSet[lastTree]);
+            console.log(tree);
+
+            var n = treeSet[lastTree].tree;
+        
+            // the last and the second last node can not have children
+            while (i < maxNode && l < treeSet[lastTree].length - 2){
+            //fork the child by some probability
+                if (Math.random() < probaFork(treeSet[lastTree].length)){
+                    var newChild = new Node(i);
+                    tree[i] = newChild;
+                    var newLength = Math.round(Math.random()*( treeSet[lastTree].length - 3 - l) + 1);
+                    n.set_child(newChild);
+                    treeSet[nextCount] = new singleTreeInf(newChild,newLength,lastTree);
+                    nextCount = nextCount + 1;
+                    newChild.set_parent(n);
+                    console.log('the first node in the child',newChild);
                 
-                for (var j = 0; j < newLength - 1; j++) {
+                    //create the new path
+                    for (var j = 0; j < newLength - 1; j++) {
+                        i = i + 1;
+                        newChild.set_next(new Node(i));
+                        newChild.next.set_prev(newChild);
+                        newChild = newChild.next;   
+                        tree[i] = newChild;      
+                    }
+
+                    //choose which node to return back and set up it
                     i = i + 1;
-                    newChild.set_next(new Node(i));
-                    newChild.next.set_prev(newChild);
-                    newChild = newChild.next;   
-                    tree[i] = newChild;      
+                    var nodeP = n;
+                    var stopCount = newLength + Math.round(Math.random()*( treeSet[lastTree].length - 2 - l - newLength) + 1);
+                    console.log('node', n, 'length', treeSet[lastTree].length, 'l', l,'newLength',newLength, 'stopCount', stopCount);
+                    for (var j = 0; j < stopCount;  j++){
+                        nodeP = nodeP.next;
+                    }
+                    newChild.set_child(nodeP);
+                    nodeP.set_parentSet(newChild);
+
                 }
-
-                i = i + 1;
-                var nodeP = n;
-                var stopCount = newLength + Math.round(Math.random()*( treeSet[lastTree].length - 2 - l - newLength) + 1);
-                console.log('node', n, 'length', treeSet[lastTree].length, 'l', l,'newLength',newLength, 'stopCount', stopCount);
-                for (var j = 0; j < stopCount;  j++){
-                    nodeP = nodeP.next;
-                }
-                newChild.set_child(nodeP);
-                nodeP.set_parentSet(newChild);
-
-           }
-
-           n = n.next;
-           l = l + 1;
+                n = n.next;
+                l = l + 1;
+            }
+            lastTree++;
         }
-        lastTree++;
-
+        //set up the new tree set decrease the length by 1.5
+        treeInfSet[count] = new treeInf(tree,treeSet);
+        maxNode = Math.ceil(maxNode/1.5);
+        maxDepth = Math.floor(maxDepth/1.5);
     }
-    treeInfSet[count] = new treeInf(tree,treeSet);
-    maxNode = Math.ceil(maxNode/2);
-    maxDepth = Math.floor(maxDepth/2);
-
-    }
-
     return treeInfSet; 
 }
 
-function compareNum(x,y){
-    if(x.length<y.length){
-      return -1;
-    }else if(x.length==y.length){
-      return 0;
-    }else if(x.length>y.length){
-      return 1;
-    }
-  }
-
-function sortByLength(treeSet, i, j){
-    var treeCurrent0 = [];
-    treeCurrent0 = treeSet.slice(i,j+1).sort(compareNum);
-    console.log("tree current!!!!!!!!!!!!",treeCurrent0);
-    //treeCurrent0 = treeCurrent0.sort(compareNum); 
-    //console.log("tree current!!!!!!!!!!!!",treeCurrent0);
-    return treeCurrent0;
-}
-
+// Draw the task sets given the whole task sets
 function drawTree(context,tree){
 
     var myCanvas = document.getElementById("myCanvas");
@@ -314,10 +311,10 @@ function drawTree(context,tree){
     var tree = treeTotal[countj].tree;
    
     var pRoot ;
-    var yStart = 1000;
-    var nextY = 20;
-    var nodeInterval = 80;
-    var nodeSize = 40;
+    var yStart;  // y location
+    var nextY = 20; // y location for the first node in each task set
+    var nodeInterval = 80; // node interval 
+    var nodeSize = 40; // node size
     var p;
 
     for ( var i = 0; i < treeSet.length; i++){
@@ -328,7 +325,7 @@ function drawTree(context,tree){
             console.log("something error!");
         var count = 0;
         p = pRoot;
-        var x,y;
+        var x;
         if (p.parent == null){
             yStart = nextY;
             x =   x + width;
@@ -344,45 +341,34 @@ function drawTree(context,tree){
             
         }
         while (p != null){
-            //console.log("p",p);
             var flag = 1;
             if (p.next == null)
                 flag = 0;
             draw_node(context, x, yStart, x, yStart + nodeInterval, nodeSize, p.index,flag);
             p.set_xy(x,yStart);
             yStart += nodeInterval;
-
             p = p.next;
             count ++;
         }
-        
         treeSet[i].lastY = yStart;
-
     }
     
+    //draw the arrow to the child node
     for (i = 0; i < tree.length; i ++){
         if (tree[i].child != null)
             draw_arrow(context, tree[i].x, tree[i].y, tree[i].child.x, tree[i].child.y, nodeSize);
-
     }
     x = x + 60;
     }
 }
 
-function draw_deque(context,color,upx,upy,w,h,num){
+// class Task
+/*
+x: x location of center
+y: y location of center
+taskNode: tasknode
 
-    context.beginPath();
-    context.fillStyle = color;
-    context.rect(upx,upy,w,h);
-    context.strokeStyle = color;
-    context.fill();
-    context.stroke();
-    draw_text (context, upx+w/2, upy+h/2,num);
-    context.closePath();
-    
-    
-}
-
+*/
 class Task{
     x;
     y;
@@ -396,6 +382,7 @@ class Task{
 
 var colors = ['green','red','magenta','DeepPink','DarkViolet','Indigo','yellow'];
 
+//Traverse the tree with only one processor
 async function traversTreeOne(context,tree,delay = 300){
     console.log("traverse tree one");
     if (delay && typeof delay !== "number") {
@@ -420,11 +407,12 @@ async function traversTreeOne(context,tree,delay = 300){
         x = n.x;
         y = n.y;
         index = n.index;
-        draw_node(context, n.x, n.y, 0, 0, 40, n.index, 0, color);//'#FF0000'
+        draw_node(context, n.x, n.y, 0, 0, 40, n.index, 0, color);
         if (n.child == null )
             n = n.next;
         else{
             if(n.child.index < n.index){
+                //if return back to the parent path, pop the task node from the double ended deque
                 console.assert(n.next==null);
                 n = taskSet.pop();
                 upy = upy - h;
@@ -432,6 +420,7 @@ async function traversTreeOne(context,tree,delay = 300){
                 
             }
             else{
+                // if forks a child, pudh the next node in the deque and continue to work on the child node
                 taskSet.push(n.next);
                 draw_deque(context,color,upx,upy,w,h,n.next.index);
                 n = n.child;
@@ -443,11 +432,13 @@ async function traversTreeOne(context,tree,delay = 300){
               resolve();
             }, delay)
           );
+        // Draw teh finished node black
         draw_node(context, x, y, 0, 0, 40, index, 0, 'black');
     }
 
 }
 
+// the information of next node
 class nextNode{
     node;
     taskDeque;
@@ -457,6 +448,7 @@ class nextNode{
     }
 }
 
+//find the next node of the given tree node (n), and the task set (taskDequeSingle)
 function traverse(context, n, taskDequeSingle,color,upx = 5){    
     var w = 60, h = 30;
     var upy = 5;   
@@ -504,6 +496,7 @@ function traverse(context, n, taskDequeSingle,color,upx = 5){
     return nextNodeSingle;  
 }
 
+//find the next node of the given tree node (n), and the task set (taskDequeSingle)
 function traverseOneDeque(context, n, taskDequeSingle,color = '#B8D9FE',upx = 5){    
     var w = 60, h = 30;
     var upy = 5;   
@@ -551,6 +544,8 @@ function traverseOneDeque(context, n, taskDequeSingle,color = '#B8D9FE',upx = 5)
     return nextNodeSingle;  
 }
 
+
+// Animation of work stealing
 async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
 {
     var w = 60, h = 30;
@@ -799,6 +794,7 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
 
 };
 
+// Animation of work sharing
 async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
 
     var w = 60, h = 30;
@@ -824,7 +820,7 @@ async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
     {
         n[j] =  tree[j].tree[0];
     }
-
+    // Each pprocessor saves the next unfinished node of each task set
     var processor = [];
     for (var j = 0; j < setNum; j++){
         processor[j] = n[j];
@@ -854,8 +850,11 @@ async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
                 var nodeAux = processor[j];
                 var nextNodeSingle =  traverseOneDeque(context, processor[j], sharedTaskDeque,colors[j]);
                 processor[j] = nextNodeSingle.node;
+                
                 if (nodeAux != processor[j])
-                {
+                {   
+                    // find the next node to be executed, if it is validate
+                    // then execute
                     processorLabel[j] = 1;
                     nodeColor.push(nodeAux);
                     labelBlack.push(nodeAux);
@@ -873,6 +872,7 @@ async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
                 resolve();
         }, delay));
 
+        // Draw the finished node black color
         for (var j = 0; j < labelBlack.length; j++){
             draw_node(context, labelBlack[j].x, labelBlack[j].y, 0, 0, 40, labelBlack[j].index, 0, 'black');
             draw_text1 (context, labelBlack[j].x + 30, labelBlack[j].y ,'t'+countShow,'black');
@@ -884,18 +884,22 @@ async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
                 for (var i = 0; i < tree.length; i++)
                 {
                     if (n[i] != null){
+                        // Assign the unexecuted task set to the idle processor
                         processor[j] = n[i];
                         n[i] = null;
                         break;
                     }
                 }
                 if (processor[j] == null ){
-                if (sharedTaskDeque.length != 0)
-                {
-                    var t = sharedTaskDeque.shift();
-                    processor[j] = t.taskNode;
-                    draw_deque(context,'white',t.x,t.y,w,h,0);
-                }}
+                    if (sharedTaskDeque.length != 0)
+                    {   
+                        //If the processor is idle and double ended deque is not empty, 
+                        //then get a job from the deque 
+                        var t = sharedTaskDeque.shift();
+                        processor[j] = t.taskNode;
+                        draw_deque(context,'white',t.x,t.y,w,h,0);
+                    }
+                }
                 
             }
         }
@@ -907,6 +911,7 @@ async function traversTreeWSharing(context,tree,delay = 300,pNum = 1){
 
 var tree;
 
+// Add events to the 'submit' button
 var btn = document.getElementById('submitB');
 btn.addEventListener("click", function() {
     console.log("press button submit");
@@ -938,6 +943,7 @@ btn.addEventListener("click", function() {
     
 });
 
+// Add events to the go button
 var btn = document.getElementById('go');
 btn.addEventListener("click", function() {
     console.log("press button go");
