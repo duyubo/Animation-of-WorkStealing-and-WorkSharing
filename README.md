@@ -16,7 +16,7 @@ We call each connected graph as one task set. To make the animation more clear, 
 Each task node can only spawn one child task set and the probability of the spawn depends on the longest length of itself. While, each task node can have many parent nodes and different children task sets of the same paren task set can return back to the same task node. 
 
 
-![Example.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkSharing.gif "Work Sharing")
+![Example.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/example.png "Some Definations")
 
 
 ## How to use it
