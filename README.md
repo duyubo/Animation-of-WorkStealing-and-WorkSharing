@@ -19,6 +19,7 @@ Each task node can only spawn one child task set and the probability of the spaw
 
 Fill in the areas mention above. Press the 'submit' button, the program will draw some task sets. Choose 'Work Stealing' or 'Work Sharing' then press the 'go' button, the animation will begin.
 
+Different processors will be represented by different colors and there will be a notation 'pX tY', where X means which processer and Y means finished at which time step.
 ## Examples
 
 ![Work Sharing.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkSharing.gif "Work Sharing")
