@@ -19,15 +19,17 @@ Each task node can only spawn one child task set and the probability of the spaw
 
 Fill in the areas mention above. Press the 'submit' button, the program will draw some task sets. Choose 'Work Stealing' or 'Work Sharing' then press the 'go' button, the animation will begin.
 
-Each processor is represented by a unique color. The colo on the task nodes means which processor is executing the task node. Double ended deques for different processors are also represented by different colors. 
+Each processor is represented by a unique color. The color on the task nodes means which processor is executing the task node. Double ended deques for different processors are also represented by different colors. 
 
-And there will be a notation 'pX tY', where X means which processer and Y means finished at which time step.
-
-Once the node is finished, they will become black.
+And there will be a notation 'pX tY', where X means which processer and Y means finished at which time step. Once the node is finished, it will become black.
 
 ## Examples
 
+### An example of work sharing
+
 ![Work Sharing.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkSharing.gif "Work Sharing")
+
+### An example of work stealing
 
 ![Work Stealing.](https://github.com/duyubo/Animation-of-WorkStealing-and-WorkSharing/blob/master/images/WorkStealing.gif "Work Stealing")
 
