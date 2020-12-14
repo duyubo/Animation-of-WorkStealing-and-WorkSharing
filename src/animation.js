@@ -575,9 +575,7 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
     for (var countj = 0; countj < pNum; countj++)
     {
         taskDeque[countj] = [];
-        //draw_text1(context,  20 + 60 * countj, 160 ,'n','black');
-        //draw_text1(context,  60 + 60 * countj, 160 ,'p','black');
-        //draw_text1(context, 40 + 60 * countj, 160 ,'t','black');
+        
     }
 
     var flag = 1;
@@ -604,7 +602,8 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
         {   
             var nodeAux = null;
             if (countj < tree.length && n[countj] != null)
-            {
+            {   
+                //If the tree have the node to execute
                 x[countj] = n[countj].x;
                 y[countj] = n[countj].y;
                 index[countj] = n[countj].index;
@@ -613,7 +612,8 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
                 n[countj] = nextNodeSingle[countj].node;
                 taskDeque[countj] = nextNodeSingle[countj].taskDeque;
                 if (nodeAux != n[countj])
-                {
+                {  
+                    // it teh next node id validate then save it
                     nodeColor.push(nodeAux);
                     labelBlack.push(nodeAux);
                     lastCheck.push(colors[countj]);
@@ -627,6 +627,8 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
                 {
                     if(taskDeque[j].length != 0 && n[countj] == null)
                     {   
+                        //If teh processor is free
+                        // assign the unexecuted tree to it 
                         var t = taskDeque[j][0].taskNode;
                         console.log(taskDeque[j][0].taskNode);
                         var flagReady = 1;
@@ -637,7 +639,8 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
                         console.log(taskDeque[j][0].taskNode,flagReady);
                         
                         if(flagReady == 1){
-
+                            //make sure there is no confliction between the unexecuted taskset
+                            // and the currently working node  
                             t = taskDeque[j].shift(); 
                             n[countj] = t.taskNode;
                             nodeColor.push(n[countj]);
@@ -651,6 +654,7 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
                             break;
                         }
                         else{
+                            // it the procesor id idle and there are some tasks in the double ended queue
                             t = taskDeque[j].shift(); 
                             n[countj] = t.taskNode;
                             draw_deque(context,'white',t.x,t.y,w,h,0);
@@ -698,7 +702,7 @@ async function traversTreeWStealing(context,tree,delay = 300,pNum = 1)
                         nextNodeSingle[countj] = traverse(context, n[countj], taskDeque[countj],colors[countj],xLocation);
                         n[countj] = nextNodeSingle[countj].node;
                         taskDeque[countj] = nextNodeSingle[countj].taskDeque;
-                        //console.log("reach here no push",nodeAux);
+                        
                     }
                     
                 }
